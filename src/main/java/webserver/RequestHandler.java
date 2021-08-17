@@ -36,7 +36,7 @@ public class RequestHandler extends Thread{
     private void response200Header(DataOutputStream dos, int length) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=UTF-8");
+            dos.writeBytes("Content-Type: text/html;charset=UTF-8 \r\n");
             dos.writeBytes("Content-Length: " + length + "\r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
