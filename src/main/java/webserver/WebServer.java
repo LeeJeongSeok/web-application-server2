@@ -10,14 +10,15 @@ import java.net.Socket;
 public class WebServer {
 
     private static final Logger log = LoggerFactory.getLogger(WebServer.class);
+    private static final int DEFAULT_PORT = 8080;
 
     public static void main(String[] args) {
 
-        try(ServerSocket socket = new ServerSocket(8080)) {
+        try(ServerSocket socket = new ServerSocket(DEFAULT_PORT)) {
             while (true) {
                 Socket connection = socket.accept();
-                Thread thread = new RequestHandler(connection);
-                thread.start();
+                RequestHandler requestHandler = new RequestHandler(connection);
+                requestHandler.start();
             }
         } catch (IOException e) {
             e.printStackTrace();
