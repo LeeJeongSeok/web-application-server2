@@ -15,6 +15,7 @@ public class WebServer {
     public static void main(String[] args) {
 
         try(ServerSocket socket = new ServerSocket(DEFAULT_PORT)) {
+            log.info("Web Application Server started {} port", DEFAULT_PORT);
             while (true) {
                 Socket connection = socket.accept();
                 RequestHandler requestHandler = new RequestHandler(connection);
