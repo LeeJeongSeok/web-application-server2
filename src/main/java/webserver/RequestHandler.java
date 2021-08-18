@@ -27,8 +27,13 @@ public class RequestHandler extends Thread{
             HttpRequest request = new HttpRequest(in);
             HttpResponse response = new HttpResponse(out);
 
-            User user = new User(request.getParameter("userId"), request.getParameter("password"), request.getParameter("name"), request.getParameter("email"));
-            log.debug("User info : {}", user);
+            if (request.getPath().equals("/user/create")) {
+                User user = new User(request.getParameter("userId"), request.getParameter("password"), request.getParameter("name"), request.getParameter("email"));
+                log.debug("User info : {}", user);
+                response.sendRedirect("/index.html");
+            }
+
+
 
             response.forward(request.getPath());
         } catch (IOException e) {
