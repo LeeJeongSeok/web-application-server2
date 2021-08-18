@@ -3,6 +3,7 @@ package http;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.HttpRequestUtils;
+import utils.IOUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,44 +24,54 @@ public class HttpRequest {
     public HttpRequest(InputStream in) {
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+            String line = br.readLine();
 
-            HttpRequestHeader(br);
+            if (line == null) {
+                return;
+            }
+
+            processRequestLine(line);
+
+            // TODO 헤더 값을 다 읽어와야함
+            while (!line.equals("")) {
+                line = br.readLine();
+                String[] headerTokens = line.split(": ");
+                if (headerTokens.length == 2) {
+                    headers.put(headerTokens[0], headerTokens[1]);
+                }
+            }
+
+            if ("POST".equals(method)) {
+                String body = IOUtils.readData(br, Integer.parseInt(headers.get("Content-Length")));
+                params = HttpRequestUtils.parseQueryString(body);
+            }
 
         } catch (IOException e) {
             log.debug(e.getMessage());
         }
     }
 
-    private void HttpRequestHeader(BufferedReader br) throws IOException {
-        String line = br.readLine();
-
-        if (line == null) {
-            return;
-        }
+    private void processRequestLine(String line) throws IOException {
 
         log.debug("requestLine : {}", line);
         String[] tokens = line.split(" ");
         method = tokens[0];
-        path = tokens[1];
+
+        // POST이면 바로 메소드 종료
+        if ("POST".equals(getMethod())) {
+            path = tokens[1];
+            return;
+        }
 
         // GET인 경우
-        int index = path.indexOf("?");
+        int index = tokens[1].indexOf("?");
 
-        // ?가 없을 경우
+        // GET이지만 파라미터 값이 없을 경우
         if (index == -1) {
             path = tokens[1];
         } else {
             path = tokens[1].substring(0, index);
             params = HttpRequestUtils.parseQueryString(tokens[1].substring(index + 1));
-        }
-
-        // TODO 헤더 값을 다 읽어와야함
-        while (!line.equals("")) {
-             line = br.readLine();
-             String[] headerTokens = line.split(": ");
-             if (headerTokens.length == 2) {
-                 headers.put(headerTokens[0], headerTokens[1]);
-             }
         }
     }
 
