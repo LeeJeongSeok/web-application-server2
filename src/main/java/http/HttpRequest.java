@@ -18,8 +18,8 @@ public class HttpRequest {
 
     private Map<String, String> headers = new HashMap<String, String>();
     private Map<String, String> params = new HashMap<String, String>();
-    private String method;
-    private String path;
+    private RequestLine requestLine;
+
 
     public HttpRequest(InputStream in) {
         try {
@@ -30,18 +30,14 @@ public class HttpRequest {
                 return;
             }
 
-            processRequestLine(line);
+            requestLine = new RequestLine(line);
+            params = requestLine.getParams();
 
             // TODO 헤더 값을 다 읽어와야함
-            while (!line.equals("")) {
-                line = br.readLine();
-                String[] headerTokens = line.split(": ");
-                if (headerTokens.length == 2) {
-                    headers.put(headerTokens[0], headerTokens[1]);
-                }
-            }
+            RequestHeader requestHeader = new RequestHeader(br, line);
+            headers = requestHeader.getHeaders();
 
-            if ("POST".equals(method)) {
+            if ("POST".equals(requestLine.getMethod())) {
                 String body = IOUtils.readData(br, Integer.parseInt(headers.get("Content-Length")));
                 params = HttpRequestUtils.parseQueryString(body);
             }
@@ -51,43 +47,20 @@ public class HttpRequest {
         }
     }
 
-    private void processRequestLine(String line) throws IOException {
-
-        log.debug("requestLine : {}", line);
-        String[] tokens = line.split(" ");
-        method = tokens[0];
-
-        // POST이면 바로 메소드 종료
-        if ("POST".equals(getMethod())) {
-            path = tokens[1];
-            return;
-        }
-
-        // GET인 경우
-        int index = tokens[1].indexOf("?");
-
-        // GET이지만 파라미터 값이 없을 경우
-        if (index == -1) {
-            path = tokens[1];
-        } else {
-            path = tokens[1].substring(0, index);
-            params = HttpRequestUtils.parseQueryString(tokens[1].substring(index + 1));
-        }
-    }
 
     public String getPath() {
-        return path;
+        return requestLine.getPath();
     }
 
     public String getMethod() {
-        return method;
-    }
-
-    public String getParameter(String name) {
-        return params.get(name);
+        return requestLine.getMethod();
     }
 
     public String getHeader(String name) {
         return headers.get(name);
+    }
+
+    public String getParameter(String name) {
+        return params.get(name);
     }
 }
