@@ -2,6 +2,7 @@ package webserver;
 
 import http.HttpRequest;
 import http.HttpResponse;
+import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +26,9 @@ public class RequestHandler extends Thread{
             // TODO 사용자 요청에 대한 처리를 구현
             HttpRequest request = new HttpRequest(in);
             HttpResponse response = new HttpResponse(out);
+
+            User user = new User(request.getParameter("userId"), request.getParameter("password"), request.getParameter("name"), request.getParameter("email"));
+            log.debug("User info : {}", user);
 
             response.forward(request.getPath());
         } catch (IOException e) {

@@ -43,6 +43,17 @@ public class HttpRequest {
         method = tokens[0];
         path = tokens[1];
 
+        // GET인 경우
+        int index = path.indexOf("?");
+
+        // ?가 없을 경우
+        if (index == -1) {
+            path = tokens[1];
+        } else {
+            path = tokens[1].substring(0, index);
+            params = HttpRequestUtils.parseQueryString(tokens[1].substring(index + 1));
+        }
+
         // TODO 헤더 값을 다 읽어와야함
         while (!line.equals("")) {
              line = br.readLine();
@@ -62,7 +73,7 @@ public class HttpRequest {
     }
 
     public String getParameter(String name) {
-        return "";
+        return params.get(name);
     }
 
     public String getHeader(String name) {
