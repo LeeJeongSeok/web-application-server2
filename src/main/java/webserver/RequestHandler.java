@@ -48,6 +48,12 @@ public class RequestHandler extends Thread{
                     response.addHeader("Set-Cookie", "logined=false");
                     response.sendRedirect("/user/login_failed.html");
                 }
+            } else if (request.getPath().equals("/user/list")) {
+                if (request.getHeader("Cookie").equals("logined=true")) {
+                    response.sendRedirect("/index.html");
+                } else {
+                    response.sendRedirect("/user/login.html");
+                }
             }
 
             response.forward(request.getPath());

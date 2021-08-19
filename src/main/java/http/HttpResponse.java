@@ -55,7 +55,6 @@ public class HttpResponse {
             dos.writeBytes("HTTP/1.1 302 Found \r\n");
             dos.writeBytes("Content-Type: text/html;charset=UTF-8 \r\n");
             dos.writeBytes("Location: " + fileName + "\r\n");
-            dos.writeBytes("Cookie: " + header.get("Set-Cookie") + "\r\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
