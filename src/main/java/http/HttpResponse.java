@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -26,8 +27,6 @@ public class HttpResponse {
     private void response200Header(int lengthOfBody) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=UTF-8 \r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBody + "\r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
             log.error(e.getMessage());
@@ -44,10 +43,22 @@ public class HttpResponse {
         }
     }
 
-    public void forward(String fileName) throws IOException {
-        byte[] body = Files.readAllBytes(Path.of("./webapp" + fileName));
-        response200Header(body.length);
-        responseBody(body);
+    public void forward(String url) {
+        try {
+            byte[] body = Files.readAllBytes(new File("./webapp" + url).toPath());
+            if (url.endsWith(".css")) {
+                header.put("Content-Type", "text/css");
+            } else if (url.endsWith(".js")) {
+                header.put("Content-Type", "application/javascript");
+            } else {
+                header.put("Content-Type", "text/html;charset=UTF-8");
+            }
+            header.put("Content-Length", body.length + "");
+            response200Header(body.length);
+            responseBody(body);
+        } catch (IOException e) {
+            log.debug(e.getMessage());
+        }
     }
 
     public void sendRedirect(String fileName) {
