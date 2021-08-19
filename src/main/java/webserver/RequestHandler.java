@@ -1,5 +1,6 @@
 package webserver;
 
+import controller.Controller;
 import db.DataBase;
 import http.HttpRequest;
 import http.HttpResponse;
@@ -28,37 +29,24 @@ public class RequestHandler extends Thread{
             HttpRequest request = new HttpRequest(in);
             HttpResponse response = new HttpResponse(out);
 
-            if (request.getPath().equals("/user/create")) {
-                User user = new User(request.getParameter("userId"), request.getParameter("password"), request.getParameter("name"), request.getParameter("email"));
-                log.debug("User info : {}", user);
-                DataBase.addUser(user);
-                response.sendRedirect("/index.html");
-            } else if (request.getPath().equals("/user/login")) {
-                User user = DataBase.findUserById(request.getParameter("userId"));
-                if (user == null) {
-                    log.debug("유저를 찾을 수 없습니다.");
-                    response.addHeader("Set-Cookie", "logined=false");
-                    response.sendRedirect("/user/login_failed.html");
-                } else if (user.login(request.getParameter("password"))) {
-                    log.debug("로그인 성공");
-                    response.addHeader("Set-Cookie", "logined=true");
-                    response.sendRedirect("/index.html");
-                } else {
-                    log.debug("로그인 실패");
-                    response.addHeader("Set-Cookie", "logined=false");
-                    response.sendRedirect("/user/login_failed.html");
-                }
-            } else if (request.getPath().equals("/user/list")) {
-                if (request.getHeader("Cookie").equals("logined=true")) {
-                    response.sendRedirect("/index.html");
-                } else {
-                    response.sendRedirect("/user/login.html");
-                }
+            Controller controller = RequestMapping.getController(request.getPath());
+            if (controller == null) {
+                String path = getDefaultPath(request.getPath());
+                response.forward(path);
+            } else {
+                controller.service(request, response);
             }
 
             response.forward(request.getPath());
         } catch (IOException e) {
             log.debug(e.getMessage());
         }
+    }
+
+    private String getDefaultPath(String path) {
+        if (path.equals("/")) {
+            return "/index.html";
+        }
+        return path;
     }
 }
