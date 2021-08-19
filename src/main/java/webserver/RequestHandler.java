@@ -1,5 +1,6 @@
 package webserver;
 
+import db.DataBase;
 import http.HttpRequest;
 import http.HttpResponse;
 import model.User;
@@ -30,10 +31,21 @@ public class RequestHandler extends Thread{
             if (request.getPath().equals("/user/create")) {
                 User user = new User(request.getParameter("userId"), request.getParameter("password"), request.getParameter("name"), request.getParameter("email"));
                 log.debug("User info : {}", user);
+                DataBase.addUser(user);
                 response.sendRedirect("/index.html");
+            } else if (request.getPath().equals("/user/login")) {
+                User user = DataBase.findUserById(request.getParameter("userId"));
+                if (user == null) {
+                    log.debug("유저를 찾을 수 없습니다.");
+                    response.sendRedirect("/user/login_failed.html");
+                } else if (user.login(request.getParameter("password"))) {
+                    log.debug("로그인 성공");
+                    response.sendRedirect("/index.html");
+                } else {
+                    log.debug("로그인 실패");
+                    response.sendRedirect("/user/login_failed.html");
+                }
             }
-
-
 
             response.forward(request.getPath());
         } catch (IOException e) {
