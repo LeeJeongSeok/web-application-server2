@@ -1,0 +1,11 @@
+### Example user template template
+### Example user template
+
+# IntelliJ project files
+/bin/
+/.settings/
+/target/
+/.classpath
+/.project
+/.idea
+web-application-server.iml
