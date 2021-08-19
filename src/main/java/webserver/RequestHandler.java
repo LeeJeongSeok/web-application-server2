@@ -37,12 +37,15 @@ public class RequestHandler extends Thread{
                 User user = DataBase.findUserById(request.getParameter("userId"));
                 if (user == null) {
                     log.debug("유저를 찾을 수 없습니다.");
+                    response.addHeader("Set-Cookie", "logined=false");
                     response.sendRedirect("/user/login_failed.html");
                 } else if (user.login(request.getParameter("password"))) {
                     log.debug("로그인 성공");
+                    response.addHeader("Set-Cookie", "logined=true");
                     response.sendRedirect("/index.html");
                 } else {
                     log.debug("로그인 실패");
+                    response.addHeader("Set-Cookie", "logined=false");
                     response.sendRedirect("/user/login_failed.html");
                 }
             }
