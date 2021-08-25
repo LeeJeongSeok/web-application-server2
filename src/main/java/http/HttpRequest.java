@@ -14,6 +14,7 @@ public class HttpRequest {
     private static final Logger log = LoggerFactory.getLogger(HttpRequest.class);
 
     private HttpHeaders headers;
+    private HttpCookie cookies;
     private RequestLine requestLine;
     private RequestParam requestParam = new RequestParam();
 
@@ -66,5 +67,13 @@ public class HttpRequest {
 
     public String getParameter(String name) {
         return requestParam.getParameter(name);
+    }
+
+    public HttpCookie getCookies() {
+        return new HttpCookie(getHeader("Cookie"));
+    }
+
+    public HttpSession getSession() {
+        return HttpSessions.getSession(getCookies().getCookie("JSESSIONID"));
     }
 }

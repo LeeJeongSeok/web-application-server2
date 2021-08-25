@@ -5,9 +5,12 @@ import http.HttpRequest;
 import http.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.HttpRequestUtils;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Map;
+import java.util.UUID;
 
 
 public class RequestHandler extends Thread{
@@ -27,6 +30,10 @@ public class RequestHandler extends Thread{
             HttpRequest request = new HttpRequest(in);
             HttpResponse response = new HttpResponse(out);
 
+            if (request.getCookies().getCookie("JSESSIONID") == null) {
+                response.addHeader("Set-Cookie", "JSESSIONID=" + UUID.randomUUID());
+            }
+
             Controller controller = RequestMapping.getController(request.getPath());
             if (controller == null) {
                 String path = getDefaultPath(request.getPath());
@@ -39,6 +46,11 @@ public class RequestHandler extends Thread{
         } catch (IOException e) {
             log.debug(e.getMessage());
         }
+    }
+
+    private String getSessionId(String cookieValue) {
+        Map<String, String> cookies = HttpRequestUtils.parseCookies(cookieValue);
+        return cookies.get("JSESSIONID");
     }
 
     private String getDefaultPath(String path) {
