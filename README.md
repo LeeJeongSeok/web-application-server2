@@ -4,7 +4,7 @@
 
 ###  3.4.2 실습 환경 세팅 및 소스코드 분석
 
-- webserver.Webserver를 실행한 후 브라우저에서 http://localhost:8080/으로 접근했을 때 "Hello World" 메시지가 출력된다면 실습준비 끝
+- webserver.Webserver를 실행한 후 브라우저에서 http://localhost:8080/ 로 접근했을 때 "Hello World" 메시지가 출력된다면 실습준비 끝
 - HTTP 웹 서버의 핵심이 되는 코드는 webserver 패키지의 WebServer와 Request 클래스이다
 - WebServer 클래스는 웹 서버를 시작하고, 사용자의 요청이 있을 때까지 대기 상태에 있다가 사용자 요청이 있을 경우 사용자 요청을 RequestHandler 클래스에 위임하는 역할을 한다.
 - ServerSocket 클래스는 사용자 요청이 발생할 때까지 대기 상태에 있도록 지원하는 역할을 한다.
@@ -19,7 +19,7 @@
 byte[] body = "Hello World".getByte();
 ```
 
-- http://localhost:8080/index.html로 접속했을 때 webapp 디렉토리의 index.html 파일을 읽어 클라이언트에 응답하도록 개발한다.
+- http://localhost:8080/index.html 로 접속했을 때 webapp 디렉토리의 index.html 파일을 읽어 클라이언트에 응답하도록 개발한다.
 - HTTP header 예)
 
 ```
@@ -109,7 +109,7 @@ Accept: */*
 
 ### 3.4.3.2 요구사항 2 - GET 방식으로 회원가입하기
 
-- "회원가입" 메뉴를 클릭하면 http://localhost:8080/user/form.html으로 이동하면서 회원가입을 할 수 있다.
+- "회원가입" 메뉴를 클릭하면 http://localhost:8080/user/form.html 으로 이동하면서 회원가입을 할 수 있다.
 - HTTP header 예)
 
 ```
